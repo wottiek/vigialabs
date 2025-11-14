@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Meu Perfil — VigiaLabs</title>
+
+  <link rel="stylesheet" href="cursos.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+  <style>
+    :root {
+      --bg-dark: #121214;
+      --panel: #1A1A1D;
+      --card-bg: #212124;
+      --text-color: #E0E0E0;
+      --muted: #888888;
+      --accent: #2FD074;
+      --border-color: #333333;
+      --shadow-sm: 0 4px 8px rgba(0,0,0,0.4);
+      --radius: 12px;
+      --warning: #ffc107;
+    }
+
+    body {
+      background-color: var(--bg-dark);
+      color: var(--text-color);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .header {
+      background-color: var(--panel);
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      color: var(--accent);
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .logo i { margin-right: 10px; font-size: 28px; }
+
+    .nav { display: flex; gap: 15px; }
+
+    .nav .nav-link {
+      color: var(--text-color);
+      text-decoration: none;
+      padding: 10px 15px;
+      border-radius: 8px;
+      transition: background-color 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      font-weight: 500;
+    }
+
+    .nav .nav-link i { margin-right: 8px; }
+
+    .nav .nav-link:hover {
+      background-color: rgba(47,208,116,0.1);
+      color: var(--accent);
+    }
+
+    .profile-card {
+      background-color: var(--panel);
+      max-width: 800px;
+      margin: 80px auto;
+      padding: 40px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      text-align: center;
+      border: 1px solid var(--border-color);
+    }
+
+    .profile-icon {
+      font-size: 80px;
+      color: var(--accent);
+      margin-bottom: 20px;
+    }
+
+    .profile-card h1 {
+      color: var(--accent);
+      margin-bottom: 25px;
+      font-size: 2em;
+    }
+
+    .profile-info {
+      text-align: left;
+      padding: 0 20px;
+      margin-bottom: 30px;
+    }
+
+    .profile-info p {
+      font-size: 1.1em;
+      margin: 15px 0;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border-color);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .profile-info strong { color: #fff; font-weight: 600; }
+    .profile-data-value { color: var(--muted); text-align: right; }
+
+    .btn.secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 25px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      text-decoration: none;
+      border: 1px solid var(--accent);
+      background-color: transparent;
+      color: var(--accent);
+      margin-top: 30px;
+    }
+
+    .btn.secondary:hover {
+      background-color: rgba(47,208,116,0.1);
+    }
+
+    .enrollment-header {
+      text-align: left;
+      margin-top: 40px;
+      margin-bottom: 20px;
+      color: #fff;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 10px;
+    }
+
+    .enrollment-list { list-style: none; padding: 0; text-align: left; }
+
+    .enrollment-item {
+      background-color: var(--card-bg);
+      padding: 20px;
+      margin-bottom: 15px;
+      border-radius: var(--radius);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      transition: transform 0.2s ease;
+      border-left: 5px solid var(--accent);
+    }
+
+    .enrollment-item:hover { transform: translateY(-2px); }
+
+    .enrollment-details strong {
+      display: block;
+      font-size: 1.2em;
+      color: var(--accent);
+      margin-bottom: 5px;
+    }
+
+    .enrollment-meta { font-size: 0.9em; color: var(--muted); }
+    .enrollment-meta span { margin-right: 15px; }
+
+    .enrollment-status {
+      font-weight: bold;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+
+    .status-Pendente { background-color: rgba(255,193,7,0.15); color: var(--warning); }
+    .status-Ativa { background-color: rgba(47,208,116,0.15); color: var(--accent); }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <i class="fas fa-microchip"></i>
+        <span class="brand-name">VigiaLabs</span>
+      </div>
+      <nav class="nav">
+        <a href="cursos.html" class="nav-link"><i class="fas fa-arrow-left"></i> Voltar ao Catálogo</a>
+        <a href="#" id="logoutLinkHeader" class="nav-link secondary-link"><i class="fas fa-sign-out-alt"></i> Sair</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="dashboard-container">
+    <div class="profile-card">
+      <i class="fas fa-user-circle profile-icon"></i>
+      <h1>Minhas Informações de Aluno</h1>
+
+      <div class="profile-info">
+        <p><strong>Nome Completo:</strong> <span id="profileName" class="profile-data-value">Carregando...</span></p>
+        <p><strong>E-mail de Acesso:</strong> <span id="profileEmail" class="profile-data-value">Carregando...</span></p>
+      </div>
+
+      <h2 class="enrollment-header">
+        <i class="fas fa-graduation-cap" style="margin-right:10px;"></i> Minhas Matrículas de Cursos
+      </h2>
+
+      <div id="enrollmentsList" class="enrollment-list"></div>
+
+      <a href="#" id="logoutLinkBody" class="btn secondary"><i class="fas fa-sign-out-alt"></i> Sair da Conta</a>
+    </div>
+  </main>
+
+  <script>
+    const STORAGE_KEY_USER = 'vigialabs_user';
+    const STORAGE_KEY_SESSION = 'vigialabs_session_active';
+
+      function loadProfileData() {
+      const userDataString = localStorage.getItem(STORAGE_KEY_USER);
+      const isLogged = localStorage.getItem(STORAGE_KEY_SESSION) === 'true';
+
+      if (!isLogged || !userDataString) {
+        alert('Sua sessão expirou ou não está logado. Redirecionando para o login.');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const userData = JSON.parse(userDataString);
+      document.getElementById('profileName').textContent = userData.fullname || 'Não Informado';
+      document.getElementById('profileEmail').textContent = userData.email || 'Não Informado';
+
+      // 🔥 Agora pega as matrículas do LocalStorage (NÃO USA PHP!)
+      const matriculas = userData.matriculas || [];
+      renderEnrollments(matriculas);
+    }
+
+
+    function renderEnrollments(enrollments) {
+      const listContainer = document.getElementById('enrollmentsList');
+      if (!enrollments.length) {
+        listContainer.innerHTML = `
+          <p style="text-align:center;color:var(--muted);padding:20px;background-color:var(--card-bg);border-radius:var(--radius);">
+            Nenhuma matrícula encontrada. <a href="cursos.html" style="color:var(--accent);text-decoration:none;">Explore nossos cursos!</a>
+          </p>`;
+        return;
+      }
+
+      listContainer.innerHTML = enrollments.map(mat => `
+        <div class="enrollment-item">
+          <div class="enrollment-details">
+            <strong>${mat.nome}</strong>
+            <div class="enrollment-meta">
+              <span><i class="fas fa-id-card"></i> Matrícula ID: ${mat.id}</span>
+              <span><i class="fas fa-calendar-alt"></i> Data: ${mat.dataMatricula}</span>
+              <span><i class="fas fa-map-marker-alt"></i> Turma: ${mat.turma.toUpperCase()}</span>
+            </div>
+          </div>
+          <div class="enrollment-status status-${mat.status.replace(/\s/g,'')}">${mat.status}</div>
+        </div>
+      `).join('');
+    }
+
+    const handleLogout = (e) => {
+      e.preventDefault();
+      localStorage.removeItem(STORAGE_KEY_SESSION);
+      alert('Sessão encerrada com sucesso! Redirecionando para o login.');
+      window.location.href = 'login.html';
+    };
+
+    document.getElementById('logoutLinkHeader').addEventListener('click', handleLogout);
+    document.getElementById('logoutLinkBody').addEventListener('click', handleLogout);
+    window.onload = loadProfileData;
+  </script>
+</body>
+</html>

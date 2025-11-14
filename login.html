@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Login — VigiaLabs (Versão Funcional)</title>
+    <link rel="stylesheet" href="styles.css" />
+
+    <style>
+        /* Mantenha o seu CSS para mensagens de erro */
+        .message-box {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            display: block;
+        }
+        .message-box.error {
+            background-color: #fdd;
+            color: #a00;
+            border: 1px solid #a00;
+        }
+        .message-box.success {
+            background-color: #dfd;
+            color: #0a0;
+            border: 1px solid #0a0;
+        }
+        .hidden {
+            display: none !important;
+        }
+        /* Estilo para cobrir a tela enquanto o JS carrega */
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: #121214; /* Cor de fundo principal do seu site */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <div id="loadingOverlay" class="loading-overlay">
+        Verificando sessão...
+    </div>
+
+    <main class="page hidden" id="mainContent">
+        <section class="brand-panel">
+            <div class="brand-inner">
+                <div class="logo" aria-hidden="true">
+                    <svg width="84" height="84" viewBox="0 0 100 100" aria-hidden="true">
+                        <rect x="8" y="8" width="84" height="84" rx="12" fill="none" stroke="currentColor" stroke-width="6"></rect>
+                        <path d="M30 60 L50 36 L70 60" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+
+                <h1 class="brand-title">VigiaLabs</h1>
+                <p class="brand-sub">Aprenda habilidades práticas. Cursos técnicos e profissionalizantes.</p>
+
+                <div class="course-info">
+                    <p>A <strong>VigiaLabs</strong> é uma plataforma voltada para o ensino técnico e profissional, oferecendo uma ampla variedade de cursos nas áreas de tecnologia, industrial e desenvolvimento pessoal.</p>
+                    <p>Nossos cursos são projetados por especialistas do mercado e atualizados constantemente, garantindo que você aprenda com conteúdos modernos e focados em resultados reais.</p>
+                </div>
+
+                <button class="back-btn" type="button" id="backBtn">← Voltar</button>
+            </div>
+        </section>
+
+        <section class="form-panel" id="loginPanel" aria-labelledby="loginTitle">
+            <div class="form-card" role="region" aria-label="Área de login">
+                <h2 id="loginTitle">Entrar na sua conta</h2>
+
+                <div id="loginMessage" class="message-box hidden" role="alert" aria-live="assertive"></div>
+
+                <form id="loginForm" action="#" method="post">
+                    <label for="login_email">E-mail</label>
+                    <input id="login_email" name="email" type="email" placeholder="seu@exemplo.com" required />
+
+                    <div class="password-row">
+                        <div class="pw-field">
+                            <label for="login_password">Senha</label>
+                            <input id="login_password" name="password" type="password" placeholder="••••••••" required />
+                        </div>
+                        <button type="button" class="show-pw" id="togglePwLogin">mostrar</button>
+                    </div>
+
+                    <div class="extras">
+                        <label class="checkbox">
+                            <input type="checkbox" name="remember" id="rememberMe" checked/>
+                            <span>Manter-me conectado</span>
+                        </label>
+                        <a class="link small" href="#" id="forgotPassword">Esqueci minha senha</a>
+                    </div>
+
+                    <button class="primary" type="submit">Entrar</button>
+
+                    <div class="divider"><span>ou</span></div>
+
+                    <div class="alt-actions">
+                        <button class="secondary" type="button" id="openRegister">Criar conta</button>
+                    </div>
+                </form>
+
+                <footer class="card-footer">
+                    <small>Ao entrar você aceita os <a href="#">Termos de uso</a> e a <a href="#">Política de privacidade</a>.</small>
+                </footer>
+            </div>
+        </section>
+
+        <section class="form-panel hidden" id="registerPanel" aria-labelledby="registerTitle">
+            <div class="form-card" role="region" aria-label="Área de cadastro">
+                <h2 id="registerTitle">Criar sua conta</h2>
+
+                <div id="registerMessage" class="message-box hidden" role="alert" aria-live="assertive"></div>
+
+                <form id="registerForm" action="salvar.php" method="post" novalidate>
+                    <label for="fullname">Nome completo</label>
+                    <input id="fullname" name="fullname" type="text" placeholder="Seu nome completo" required class="input-field"/>
+
+                    <label for="register_email">E-mail</label>
+                    <input id="register_email" name="email" type="email" placeholder="seu@exemplo.com" required class="input-field"/>
+
+                    <label for="register_password">Senha</label>
+                    <input id="register_password" name="password" type="password" placeholder="Crie uma senha" required class="input-field"/>
+
+                    <button class="primary" type="submit">Cadastrar</button>
+
+                    <div class="alt-actions">
+                        <a class="link" href="#" id="backToLogin">Já tenho conta</a>
+                    </div>
+                </form>
+
+                <footer class="card-footer">
+                    <small>Ao se cadastrar, você concorda com nossos <a href="#">Termos</a> e <a href="#">Política de privacidade</a>.</small>
+                </footer>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // -------------------------------------------------------------
+        // 🚨 CONFIGURAÇÃO DE TESTE / SIMULAÇÃO DE BACKEND E SESSÃO 🚨
+        // -------------------------------------------------------------
+
+        // 📧 Usuário padrão (se não houver nenhum no localStorage)
+        const DEFAULT_USER = { email: 'teste@vigialabs.com', password: 'senha123', fullname: 'Usuário Teste' };
+
+        // Chaves de localStorage
+        const STORAGE_KEY_USER = 'vigialabs_user';
+        const STORAGE_KEY_SESSION = 'vigialabs_session_active';
+
+        // Carrega o usuário atual do localStorage ou usa o padrão
+        let dynamic_user = JSON.parse(localStorage.getItem(STORAGE_KEY_USER)) || DEFAULT_USER;
+
+        // Salva o usuário no localStorage
+        const saveUserToStorage = (user) => {
+            localStorage.setItem(STORAGE_KEY_USER, JSON.stringify(user));
+            dynamic_user = user; // Atualiza a variável dinâmica
+        };
+
+        // Salva o status da sessão (logado ou não)
+        const setSessionActive = (isActive) => {
+            localStorage.setItem(STORAGE_KEY_SESSION, isActive ? 'true' : 'false');
+        };
+
+        // Verifica se há uma sessão ativa
+        const isSessionActive = () => {
+            return localStorage.getItem(STORAGE_KEY_SESSION) === 'true';
+        };
+
+        // Simula o atraso de rede (200ms)
+        const mockFetch = (isSuccess, message, delay = 500) => {
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    resolve({ success: isSuccess, message: message });
+                }, delay);
+            });
+        };
+
+        // -------------------------------------------------------------
+        // FUNÇÕES DE UI E NAVEGAÇÃO
+        // -------------------------------------------------------------
+
+        const loginPanel = document.getElementById('loginPanel');
+        const registerPanel = document.getElementById('registerPanel');
+        const loginMessage = document.getElementById('loginMessage');
+        const registerMessage = document.getElementById('registerMessage');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const mainContent = document.getElementById('mainContent');
+
+        // Função para alternar visibilidade da senha
+        function setupPasswordToggle(inputId, toggleId) {
+            const pw = document.getElementById(inputId);
+            const togglePw = document.getElementById(toggleId);
+            if (pw && togglePw) {
+                togglePw.addEventListener('click', () => {
+                    const hidden = pw.type === 'password';
+                    pw.type = hidden ? 'text' : 'password';
+                    togglePw.textContent = hidden ? 'ocultar' : 'mostrar';
+                });
+            }
+        }
+
+        // Alternar login <-> cadastro
+        document.getElementById('openRegister').addEventListener('click', (e) => {
+            loginPanel.classList.add('hidden');
+            registerPanel.classList.remove('hidden');
+            loginMessage.classList.add('hidden');
+        });
+
+        document.getElementById('backToLogin').addEventListener('click', (e) => {
+            e.preventDefault();
+            registerPanel.classList.add('hidden');
+            loginPanel.classList.remove('hidden');
+            registerMessage.classList.add('hidden');
+            // Pré-preenche o e-mail se o usuário acabou de cadastrar
+            document.getElementById('login_email').value = document.getElementById('register_email').value;
+        });
+
+        // Botão de voltar
+        document.getElementById('backBtn').addEventListener('click', () => {
+            if (window.history.length > 1) history.back();
+            else window.location.href = 'cursos.html'; // Redireciona para o catálogo se não houver histórico
+        });
+
+        // -------------------------------------------------------------
+        // 🔑 LÓGICA DE LOGIN (FUNCIONAL COM LOCALSTORAGE)
+        // -------------------------------------------------------------
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const form = e.currentTarget;
+            const email = form.querySelector('input[name="email"]').value.trim();
+            const password = form.querySelector('input[name="password"]').value.trim();
+            const remember = form.querySelector('#rememberMe').checked;
+
+            loginMessage.classList.add('hidden');
+            loginMessage.classList.remove('error', 'success');
+
+            if (email === dynamic_user.email && password === dynamic_user.password) {
+                // Login OK
+                const result = await mockFetch(true, 'Login realizado com sucesso!');
+
+                loginMessage.textContent = result.message;
+                loginMessage.className = 'message-box success';
+                loginMessage.classList.remove('hidden');
+
+                // 🚀 SALVA A SESSÃO APENAS SE "MANTER CONECTADO" ESTIVER MARCADO
+                if (remember) {
+                    setSessionActive(true);
+                }
+
+                // Redirecionamento
+                setTimeout(() => {
+                    window.location.href = 'cursos.html';
+                }, 500);
+
+            } else {
+                // Login FAILED
+                const result = await mockFetch(false, 'E-mail ou senha incorretos.');
+                loginMessage.textContent = result.message;
+                loginMessage.className = 'message-box error';
+                loginMessage.classList.remove('hidden');
+            }
+        });
+
+        // -------------------------------------------------------------
+        // 📝 LÓGICA DE CADASTRO (FUNCIONAL COM LOCALSTORAGE)
+        // -------------------------------------------------------------
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+
+            const form = e.currentTarget;
+            const fullname = form.querySelector('input[name="fullname"]').value.trim();
+            const email = form.querySelector('input[name="email"]').value.trim();
+            const password = form.querySelector('input[name="password"]').value.trim();
+
+            registerMessage.classList.add('hidden');
+            registerMessage.classList.remove('error', 'success');
+
+            if (email === dynamic_user.email) {
+                // Simulação de e-mail já em uso (verifica contra o único usuário salvo)
+                const result = await mockFetch(false, 'Este e-mail já está cadastrado. Tente outro.');
+                registerMessage.textContent = result.message;
+                registerMessage.className = 'message-box error';
+                registerMessage.classList.remove('hidden');
+                return;
+            }
+
+            // Novo usuário cadastrado: sobrescreve o antigo no localStorage
+            const newUser = { fullname, email, password };
+            saveUserToStorage(newUser); // Salva o novo usuário
+
+            const result = await mockFetch(true, 'Cadastro realizado com sucesso! Você já pode fazer login.');
+
+            registerMessage.textContent = result.message;
+            registerMessage.className = 'message-box success';
+            registerMessage.classList.remove('hidden');
+
+            // Volta para o login após 2 segundos
+            setTimeout(() => {
+                registerPanel.classList.add('hidden');
+                loginPanel.classList.remove('hidden');
+                document.getElementById('login_email').value = email; // Pré-preenche
+            }, 2000);
+        });
+
+        // -------------------------------------------------------------
+        // INICIALIZAÇÃO E VERIFICAÇÃO DE SESSÃO
+        // -------------------------------------------------------------
+
+        const initialize = () => {
+            // Verifica se o usuário já está logado ("Manter Conectado" estava marcado)
+            if (isSessionActive()) {
+                // 🚀 REDIRECIONAMENTO IMEDIATO SE JÁ ESTIVER LOGADO
+                window.location.href = 'cursos.html';
+                return; // Impede que o restante da página seja exibido
+            }
+
+            // Se não estiver logado, exibe a página de login e remove o overlay de carregamento
+            loadingOverlay.classList.add('hidden');
+            mainContent.classList.remove('hidden');
+            setupPasswordToggle('login_password', 'togglePwLogin');
+        };
+
+        window.onload = initialize;
+    </script>
+</body>
+</html>

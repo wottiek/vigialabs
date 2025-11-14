@@ -1,0 +1,13 @@
+2025-11-10 12:43:11 - === Executando salvar.php ===
+2025-11-10 12:43:11 - Conectado: host_info=localhost via TCP/IP client_info=mysqlnd 5.0.12-dev - 20150407 - $Id: 3591daad22de08524295e1bd073aceeff11e6579 $ server_info=5.5.5-10.4.14-MariaDB
+2025-11-10 12:43:11 - Banco atual (SELECT DATABASE()): cadastro
+2025-11-10 12:43:11 - POST: Array
+(
+    [fullname] => mateus
+    [email] => mateus@gmail.com
+    [password] => 1234
+)
+
+2025-11-10 12:43:11 - Tabela matriculas existe? SIM
+2025-11-10 12:43:11 - execute returned: true stmt_error: affected_rows:1 insert_id:33
+2025-11-10 12:43:11 - SUCESSO: insert_id=33 affected_rows=1

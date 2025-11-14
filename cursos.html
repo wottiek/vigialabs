@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Catálogo de Cursos — VigiaLabs</title>
+    <link rel="stylesheet" href="cursos.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-microchip"></i>
+                <span class="brand-name">VigiaLabs</span>
+            </div>
+            <nav class="nav">
+                <a href="perfil.html" id="profileLink" class="nav-link"><i class="fas fa-user-circle"></i> Perfil</a>
+                <a href="salvar2.php" id="logoutLink" class="nav-link secondary-link"><i class="fas fa-sign-out-alt"></i> Sair</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="dashboard-container">
+        <section class="hero-section">
+            <div class="hero-text">
+                <h1>Próxima Geração de Profissionais</h1>
+                <p class="sub-heading">Explore as trilhas de aprendizado em tecnologia e indústria mais demandadas pelo mercado.</p>
+            </div>
+        </section>
+
+        <section class="filter-bar">
+            <h2>Nossas Especializações</h2>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Buscar por curso ou habilidade..." class="search-input">
+            </div>
+        </section>
+
+        <section class="category-grid" id="courseGrid">
+        </section>
+    </main>
+
+    <script>
+        // -------------------------------------------------------------
+        // ⚠️ BLOCO DE INICIALIZAÇÃO DE DADOS DE TESTE ⚠️
+        // Garante que uma sessão e dados de usuário existam para que a página de perfil funcione.
+        // -------------------------------------------------------------
+        const initializeTestData = () => {
+            // Se não houver dados de login, cria uma sessão de teste
+            if (localStorage.getItem('userLoggedIn') !== 'true') {
+                localStorage.setItem('userLoggedIn', 'true');
+                localStorage.setItem('userData', JSON.stringify({
+                    nome: 'Aluno Teste VigiaLabs',
+                    email: 'aluno.teste@vigialabs.com',
+                    matricula: '#20250001',
+                    cursoAtivo: 'Técnico em Informática e Desenvolvimento de Sistemas',
+                    status: 'Ativo (Cursando)'
+                }));
+            }
+        };
+
+
+        // -------------------------------------------------------------
+        // 💡 BASE DE DADOS DOS CURSOS (SIMULAÇÃO)
+        // -------------------------------------------------------------
+        const coursesData = [
+            {
+                id: 'informatica',
+                category: 'Tecnologia & Sistemas',
+                iconClass: 'fas fa-code',
+                title: 'Técnico em Informática e Desenvolvimento de Sistemas',
+                description: 'Domine linguagens de programação, banco de dados e metodologias ágeis (Scrum/Kanban).',
+                tag: 'Mais procurado',
+                image: 'https://cursos.ce.senac.br/wp-content/uploads/2024/01/3401_01-01-2023_215707781-scaled.jpg'
+            },
+            {
+                id: 'mecanica',
+                category: 'Industrial & Eletromecânica',
+                iconClass: 'fas fa-wrench',
+                title: 'Técnico em Mecânica ou Mecatrônica',
+                description: 'Manutenção, automação industrial e sistemas robóticos para fábricas inteligentes.',
+                image: 'https://static.wixstatic.com/media/60930b_328075b8aa884798b3ce13b77539c52b~mv2.jpg/v1/crop/x_0,y_231,w_3264,h_1870/fill/w_319,h_180,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/curso%20de%20mecatronica.jpg'
+            },
+            {
+                id: 'eletrica',
+                category: 'Industrial & Eletromecânica',
+                iconClass: 'fas fa-bolt',
+                title: 'Técnico em Elétrica ou Eletromecânica',
+                description: 'Instalação e manutenção de sistemas elétricos de potência e comando industrial.',
+                tag: 'Novo',
+                image: 'https://www.senaipr.org.br/noticias-da-industria/dbimages/-eletromecanica-senai-04_271836_img.jpg'
+            },
+            {
+                id: 'marketing',
+                category: 'Negócios & Gestão',
+                iconClass: 'fas fa-bullhorn',
+                title: 'Técnico em Marketing',
+                description: 'Estratégias digitais, SEO, mídias sociais e análise de dados para campanhas de sucesso.',
+                image: 'https://clicfolha.com.br/wp-content/uploads/2024/04/contratar-estagiario.jpg',
+            },
+            {
+                id: 'administracao',
+                category: 'Negócios & Gestão',
+                iconClass: 'fas fa-tasks',
+                title: 'Técnico em Administração ou Serviços de Escritório / Gestão',
+                description: 'Organização de processos, finanças básicas e gestão de recursos humanos.',
+                image: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?q=80&w=1500&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+            },
+            {
+                id: 'logistica',
+                category: 'Logística & Transporte',
+                iconClass: 'fas fa-box-open',
+                title: 'Qualificação Profissional em Logística ou Transporte',
+                description: 'Controle de estoque, cadeia de suprimentos (supply chain) e otimização de armazenagem.',
+                image: 'https://lh3.googleusercontent.com/-TomSPQyL0tE/UTl9gDOV4II/AAAAAAAAKGk/7PgkaakIW00/s620/tecnolog-logistica.jpg',
+            }
+        ];
+
+        // -------------------------------------------------------------
+        // FUNÇÕES DE RENDERIZAÇÃO E BUSCA
+        // -------------------------------------------------------------
+
+        const courseGrid = document.getElementById('courseGrid');
+        const searchInput = document.getElementById('searchInput');
+
+        const generateCourseCard = (course) => {
+            return `
+                <div class="card course-card">
+                    <div class="course-image-container">
+                        <img src="${course.image}" alt="Capa do curso de ${course.title}" class="course-image">
+                    </div>
+                    <div class="card-icon"><i class="${course.iconClass}"></i></div>
+                    <h3>${course.title}</h3>
+                    <p>${course.description}</p>
+                    <a href="curso_detalhes.php?id=${course.id}" class="btn primary">Detalhes</a>
+                    ${course.tag ? `<span class="tag">${course.tag}</span>` : ''}
+                </div>
+            `;
+        };
+
+        const renderCourses = (filteredCourses = coursesData) => {
+            courseGrid.innerHTML = '';
+            
+            const categories = filteredCourses.reduce((acc, course) => {
+                if (!acc[course.category]) {
+                    acc[course.category] = [];
+                }
+                acc[course.category].push(course);
+                return acc;
+            }, {});
+
+            let fullHTML = '';
+            for (const category in categories) {
+                let categoryIcon = 'fas fa-cogs'; // Padrão
+                if (category.includes('Tecnologia')) categoryIcon = 'fas fa-laptop-code';
+                else if (category.includes('Industrial')) categoryIcon = 'fas fa-industry';
+                else if (category.includes('Negócios')) categoryIcon = 'fas fa-chart-line';
+                else if (category.includes('Logística')) categoryIcon = 'fas fa-truck-moving';
+
+                const courseCards = categories[category].map(generateCourseCard).join('');
+                
+                fullHTML += `
+                    <div class="course-category">
+                        <h2 class="category-title"><i class="${categoryIcon} accent-icon"></i> ${category}</h2>
+                        <div class="course-list">
+                            ${courseCards}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            if (fullHTML === '') {
+                 fullHTML = '<p style="color: var(--muted); text-align: center; margin-top: 50px;">Nenhum curso encontrado para sua pesquisa.</p>';
+            }
+
+            courseGrid.innerHTML = fullHTML;
+        };
+        
+        // -------------------------------------------------------------
+        // LÓGICA DE PERFIL E SAIR
+        // -------------------------------------------------------------
+
+        const logoutLink = document.getElementById('logoutLink');
+
+        const handleLogout = (e) => {
+            e.preventDefault(); 
+            localStorage.clear(); 
+            alert('Sessão encerrada com sucesso! Redirecionando para a página de login.');
+            window.location.href = 'login.html'; 
+        };
+
+        if (logoutLink) {
+            logoutLink.addEventListener('click', handleLogout);
+        }
+        
+        // -------------------------------------------------------------
+        // LÓGICA DE BUSCA
+        // -------------------------------------------------------------
+        
+        const handleSearch = () => {
+            const query = searchInput.value.toLowerCase().trim();
+            if (query === '') {
+                renderCourses(coursesData);
+                return;
+            }
+
+            const filtered = coursesData.filter(course => 
+                course.title.toLowerCase().includes(query) ||
+                course.description.toLowerCase().includes(query) ||
+                course.category.toLowerCase().includes(query)
+            );
+            
+            renderCourses(filtered);
+        };
+
+        searchInput.addEventListener('input', handleSearch);
+
+        // Renderiza os cursos e INICIALIZA DADOS NA PRIMEIRA CARGA
+        window.onload = () => {
+            initializeTestData();
+            renderCourses();
+        };
+
+    </script>
+</body>
+</html>
